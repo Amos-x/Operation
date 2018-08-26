@@ -1,0 +1,29 @@
+<script>
+
+        function sleep(n) { //n表示的毫秒数
+                var start = new Date().getTime();
+                while (true) if (new Date().getTime() - start > n) break;
+            }
+
+        $(document).ready(function(){
+            $('.page').click(function(){
+                var searchStr = location.search;
+                var old_href = $(this).attr('href').replace('?', '');
+                var searchArray = searchStr.split('&');
+
+                if (searchStr == ''){
+                    searchStr = '?page=1'
+                }
+
+                if (searchStr.indexOf('page')>=0){
+                    searchArray.pop();
+                }
+
+                searchArray.push(old_href);
+                if (searchArray.length > 1) {
+                    $(this).attr('href', searchArray.join('&'));
+                }
+
+            })
+        });
+</script>
