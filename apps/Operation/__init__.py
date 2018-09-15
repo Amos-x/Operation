@@ -1,7 +1,3 @@
-# __author__: Amos,Chinese
-# Email：379833553@qq.com
-
-# celery4
 from __future__ import absolute_import, unicode_literals
 
 # This will make sure the app is always imported when
@@ -10,8 +6,6 @@ from .celery import app as celery_app
 
 __all__ = ('celery_app',)
 
-
-# mysql
 import pymysql
 
 pymysql.install_as_MySQLdb()

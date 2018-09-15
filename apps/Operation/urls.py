@@ -17,11 +17,8 @@ from django.contrib import admin
 from django.urls import path,include
 from rest_framework.documentation import include_docs_urls
 
-urlpatterns = [
-    # path('admin/', admin.site.urls),
-    path('',include('asset.urls',namespace='asset')),
-    path('api/',include('api.urls',namespace='api')),
-    path('api-auth/',include('rest_framework.urls')),
-    path('apidocs/',include_docs_urls(title="运维平台API")),
-]
 
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('',include('core.urls')),
+]
