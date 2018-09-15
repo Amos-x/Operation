@@ -1,3 +1,4 @@
+#! /usr/local/bin/python3
 # __author__: Amos,Chinese
 # Email：379833553@qq.com
 
@@ -227,14 +228,14 @@ def show_service_status(service):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="""
-    Operation service control tools
+    Operation service control tools;
 
-    Usage:
-    %(prog)s [start|stop|status|restart] service
+    \r\n Usage:
+    \r\n%(prog)s sction service
     
-    Example:
+    \r\nExample:
     
-    %(prog)s start all
+    \r\n%(prog)s start all
 
     """)
 
