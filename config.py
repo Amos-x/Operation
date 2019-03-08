@@ -15,7 +15,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class Config:
     # Gunicorn workers, default 4
-    # WORKERS = 4
+    WORKERS = 4
 
     # Django security setting, if your disable debug model, you should setting that
     ALLOWED_HOSTS = ['*']
@@ -52,7 +52,7 @@ class Config:
     REDIS_MAX_CONNECTIONS = 100
     # only choose one, Signgle Instance or Server Cluster?
     # Single Instance
-    REDIS_CACHE_LOCATION = "redis://:wyx379833553@127.0.0.1:6379/6",  # redis单实例连接
+    REDIS_CACHE_LOCATION = "redis://:wyx379833553@127.0.0.1:6379/8",  # redis单实例连接
     # Server Cluster , server port not sentinel port.
     # REDIS_CACHE_LOCATION = [
     #     "redis://192.168.9.80:6379/10",
@@ -61,7 +61,7 @@ class Config:
     # ],
 
     # User redis as broker for celery
-    CELERY_BROKER_URL = 'redis://:wyx379833553@127.0.0.1:6379/5'
+    CELERY_BROKER_URL = 'redis://:wyx379833553@127.0.0.1:6379/7'
     # User reids sentinel cluster
     # CELERY_BROKER_URL = 'sentinel://192.168.9.80:16379;sentinel://192.168.9.80:16380;sentinel://192.168.9.80:16381'
 

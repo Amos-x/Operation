@@ -31,6 +31,7 @@ WORKERS = CONFIG.WORKERS or 4
 DEBUG = CONFIG.DEBUG or True
 all_services = ['gunicorn', 'celery', 'beat']
 TIMEOUT = 10
+DAEMON = False
 
 
 def make_migrations():
@@ -40,8 +41,15 @@ def make_migrations():
     subprocess.call('python3 manage.py migrate', shell=True)
 
 
+def collect_static():
+    print("Collect static files")
+    os.chdir(os.path.join(BASE_DIR, 'apps'))
+    subprocess.call('python3 manage.py collectstatic --no-input', shell=True)
+
+
 def prepare():
     make_migrations()
+    collect_static()
 
 
 def get_pid_file_path(service):
@@ -55,6 +63,8 @@ def get_log_file_path(service):
 def parse_service(service):
     if service == 'all':
         return all_services
+    elif ',' in service:
+        return [i.strip() for i in s.split(',')]
     else:
         return [service]
 
@@ -101,12 +111,13 @@ def start_gunicorn():
         'gunicorn', 'Operation.wsgi',
         '-b', bind,
         '-w', str(WORKERS),
-        '-k', 'eventlet'
+        '-k', 'eventlet',
         '--access-logformat', log_format,
         '-p', pid_file,
-        '-access-logfile', log_file,
-        '--daemon',
+        '--access-logfile', log_file,
     ]
+    if DAEMON:
+        cmd.append('--daemon')
     if DEBUG:
         cmd.append('--reload')
     p = subprocess.Popen(cmd, stdout=sys.stdout, stderr=sys.stderr, cwd=APPS_DIR)
@@ -204,7 +215,8 @@ def stop_service(service,sig=15):
     for i in services_set:
         print("\nStopping {} service...".format(i))
         pid = get_pid(i)
-        os.kill(pid, sig)
+        if pid:
+            os.kill(pid, sig)
         now = time.time()
         while is_running(i):
             if int(time.time() - now) < TIMEOUT:
@@ -249,17 +261,26 @@ if __name__ == '__main__':
         choices=['all', 'gunicorn', 'celery', 'beat'],
         help="The service to start"
     )
+    parser.add_argument('-d', '--daemon', action='store_true',help='使用使用后台模式运行')
+    parser.add_argument('-w', '--worker', type=int, help='指定gunicorn工作进程')
     args = parser.parse_args()
 
+    if args.daemon:
+        DAEMON = True
+
+    if args.worker:
+        WORKERS = args.worker
+
+    svc = args.service
     if args.action == 'start':
-        start_service(args.service)
+        start_service(svc)
     elif args.action == 'stop':
-        stop_service(args.service)
+        stop_service(svc)
     elif args.action == 'status':
-        show_service_status(args.service)
+        show_service_status(svc)
     elif args.action == 'restart':
-        stop_service(args.service)
+        stop_service(svc)
         time.sleep(5)
-        start_service(args.service)
+        start_service(svc)
     else:
-        show_service_status(args.service)
+        show_service_status(svc)

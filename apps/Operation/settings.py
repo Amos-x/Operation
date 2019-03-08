@@ -55,7 +55,9 @@ INSTALLED_APPS = [
     'django_celery_results',
     'django_celery_beat',
     'rest_framework',
-    'core',
+    # 'core',
+    'assets',
+    'common'
 ]
 
 MIDDLEWARE = [
@@ -101,6 +103,7 @@ DATABASES = {
         'PORT': CONFIG.DB_PORT,
         'USER': CONFIG.DB_USER,
         'PASSWORD': CONFIG.DB_PASSWORD,
+        'ATOMIC_REQUESTS': True,
     }
 }
 
@@ -143,6 +146,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+# STATIC_ROOT = os.path.join(PROJECT_DIR,'data','static')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
 
 ##
@@ -185,10 +189,10 @@ CACHES = {
 DJANGO_REDIS_LOGGER = 'django'  ## 指定缓存log记录器
 
 # 登陆页面的设定
-LOGIN_URL = '/login'
+# LOGIN_URL = '/login'
 
 # 拓展用户模型
-AUTH_USER_MODEL = 'core.UserProfile'
+# AUTH_USER_MODEL = 'core.UserProfile'
 
 # Email的SMTP配置
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -231,7 +235,7 @@ LOGGING = {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(CONFIG.LOG_DIR,'Operation.log'),   ## 日志输出文件
-            'maxBytes': 1024*1024*50,   # 文件大小,50M
+            'maxBytes': 1024*1024*10,   # 文件大小,10M
             'backupCount': 5,   # 备份份数
             'formatter':'standard',    # 使用哪种formatters日志格式
         },
@@ -239,7 +243,7 @@ LOGGING = {
             'level':'ERROR',
             'class':'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(CONFIG.LOG_DIR,'error.log'),
-            'maxBytes':1024*1024*50,    # 文件大小,50M
+            'maxBytes':1024*1024*10,    # 文件大小,10M
             'backupCount': 5,
             'formatter':'standard',
         },
@@ -247,7 +251,7 @@ LOGGING = {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(CONFIG.LOG_DIR, 'tasks.log'),
-            'maxBytes': 1024*1024*50,
+            'maxBytes': 1024*1024*10,
             'backupCount': 10,
             'formatter':'standard',
         },
@@ -259,6 +263,11 @@ LOGGING = {
     },
     'loggers': {
         'django': {
+            'handlers': ['default', 'console','error'],
+            'level': CONFIG.LOG_LEVEL,
+            'propagate': True
+        },
+        'operation': {
             'handlers': ['default', 'console','error'],
             'level': CONFIG.LOG_LEVEL,
             'propagate': True
