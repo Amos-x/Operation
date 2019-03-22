@@ -11,7 +11,7 @@ from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 from common.mixins import AdminUserRequiredMixin
 from common.constant import create_success_msg, update_success_msg
-from assets.models import AdminUser
+from assets.models import AdminUser, Node
 from assets.forms import AdminUserForm
 
 
@@ -35,13 +35,14 @@ class AdminUserListView(AdminUserRequiredMixin, TemplateView):
 class AdminUserDetailView(AdminUserRequiredMixin, DetailView):
     model = AdminUser
     template_name = 'assets/admin_user_detail.html'
-    # context_object_name = 'admin_user'
-    # object = None
+    context_object_name = 'admin_user'
+    object = None
 
     def get_context_data(self, **kwargs):
         context = {
             'app': _('Assets'),
-            'action': _('Admin user detail')
+            'action': _('Admin user detail'),
+            'node': Node.objects.all()
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)

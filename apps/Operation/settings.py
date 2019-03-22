@@ -55,9 +55,10 @@ INSTALLED_APPS = [
     'django_celery_results',
     'django_celery_beat',
     'rest_framework',
-    # 'core',
+    'captcha',
     'assets',
-    'common'
+    'common',
+    'users'
 ]
 
 MIDDLEWARE = [
@@ -146,8 +147,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-# STATIC_ROOT = os.path.join(PROJECT_DIR,'data','static')
+STATIC_ROOT = os.path.join(PROJECT_DIR,'data','static')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
+
+# 上传文件目录设置
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(PROJECT_DIR, 'data', 'media')
+
 
 ##
 # CHANNEL_LAYERS = {
@@ -192,7 +199,10 @@ DJANGO_REDIS_LOGGER = 'django'  ## 指定缓存log记录器
 # LOGIN_URL = '/login'
 
 # 拓展用户模型
-# AUTH_USER_MODEL = 'core.UserProfile'
+AUTH_USER_MODEL = 'user.User'
+
+# 用户默认过期时间
+DEFAULT_EXPIRED_YEARS = CONFIG.DEFAULT_EXPIRED_YEARS or 70
 
 # Email的SMTP配置
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

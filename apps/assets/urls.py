@@ -8,7 +8,7 @@ from django.urls import path, re_path
 from . import views
 
 
-app_name = 'assets'
+# app_name = 'assets'
 
 urlpatterns = [
     path('', views.AssetListView.as_view(), name='asset-list'),

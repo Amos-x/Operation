@@ -10,7 +10,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from common.mixins import AdminUserRequiredMixin
 from common.constant import create_success_msg, update_success_msg
-from assets.models import SystemUser
+from assets.models import SystemUser, Node
 from assets.forms import SystemUserForm
 
 __all__ = ['SystemUserListView', 'SystemUserCreateView', 'SystemUserDetailView',
@@ -30,12 +30,15 @@ class SystemUserListView(AdminUserRequiredMixin, TemplateView):
 
 
 class SystemUserDetailView(AdminUserRequiredMixin, DetailView):
+    model = SystemUser
     template_name = 'assets/system_user_detail.html'
+    context_object_name = 'system_user'
 
     def get_context_data(self, **kwargs):
         context = {
             'app': _('Assets'),
             'action': _('System user list'),
+            'nodes_remain': Node.objects.exclude(systemuser=self.object)
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)

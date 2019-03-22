@@ -85,10 +85,10 @@ class UserProfile(AbstractBaseUser,PermissionsMixin):
         # Simplest possible answer: Yes, always
         return True
 
-    @property
-    def is_staff(self):
-        """是否可以进入admin管理界面，默认所有管理员都可以进入"""
-        return self.is_admin
+    # @property
+    # def is_staff(self):
+    #     """是否可以进入admin管理界面，默认所有管理员都可以进入"""
+    #     return self.is_admin
 
     class Meta:
         verbose_name = '用户信息',
