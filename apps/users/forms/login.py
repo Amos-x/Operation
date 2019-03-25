@@ -21,6 +21,7 @@ class UserLoginForm(AuthenticationForm):
     )
 
     def confirm_login_allowed(self, user):
+        """ 确保用户已登录且可用 """
         if not user.is_staff:
             raise forms.ValidationError(
                 self.error_messages['inactive'],

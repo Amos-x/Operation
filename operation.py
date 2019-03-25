@@ -6,9 +6,11 @@ from apps import __version__
 import os
 import sys
 import subprocess
+import threading
 import time
 import argparse
 import platform
+import signal
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -43,7 +45,7 @@ def make_migrations():
 
 def collect_static():
     print("Collect static files")
-    os.chdir(os.path.join(BASE_DIR, 'apps'))
+    os.chdir(APPS_DIR)
     subprocess.call('python3 manage.py collectstatic --no-input', shell=True)
 
 
@@ -64,7 +66,7 @@ def parse_service(service):
     if service == 'all':
         return all_services
     elif ',' in service:
-        return [i.strip() for i in s.split(',')]
+        return [i.strip() for i in service.split(',')]
     else:
         return [service]
 
@@ -142,9 +144,12 @@ def start_celery():
         '-l', CONFIG.LOG_LEVEL.lower(),
         '--pidfile', pid_file,
         '-c', str(WORKERS),
-        '--logfile', log_file,
-        '--detach'
     ]
+    if DAEMON:
+        cmd.extend([
+            '--logfile', log_file,
+            '--detach',
+        ])
     p = subprocess.Popen(cmd, stdout=sys.stdout, stderr=sys.stderr, cwd=APPS_DIR)
     return p
 
@@ -168,9 +173,12 @@ def start_beat():
         '-l', CONFIG.LOG_LEVEL.lower(),
         '--scheduler', scheduler,
         '--max-interval', '60',
-        '--logfile', log_file,
-        '--detach'
     ]
+    if DAEMON:
+        cmd.extend([
+            '--logfile', log_file,
+            '--detach',
+        ])
     p = subprocess.Popen(cmd, stdout=sys.stdout, stderr=sys.stderr, cwd=APPS_DIR)
     return p
 
@@ -206,8 +214,26 @@ def start_service(service):
                 stop_service(service, sig=9)
                 return
 
-    print()
-    show_service_status(service)
+    stop_event = threading.Event()
+
+    if not DAEMON:
+        signal.signal(signal.SIGTERM, lambda x, y: stop_event.set())
+        while not stop_event.is_set():
+            try:
+                time.sleep(10)
+            except KeyboardInterrupt:
+                stop_event.set()
+                break
+
+        print("Stop services")
+        for p in process:
+            p.terminate()
+
+        for i in services_set:
+            stop_service(i)
+    else:
+        print()
+        show_service_status(service)
 
 
 def stop_service(service,sig=15):
@@ -261,8 +287,8 @@ if __name__ == '__main__':
         choices=['all', 'gunicorn', 'celery', 'beat'],
         help="The service to start"
     )
-    parser.add_argument('-d', '--daemon', action='store_true',help='使用使用后台模式运行')
-    parser.add_argument('-w', '--worker', type=int, help='指定gunicorn工作进程')
+    parser.add_argument('-d', '--daemon', action='store_true', help='使用使用后台模式运行')
+    parser.add_argument('-w', '--worker', type=int, help='指定gunicorn工作进程数')
     args = parser.parse_args()
 
     if args.daemon:

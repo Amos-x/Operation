@@ -8,6 +8,8 @@ import logging
 from itsdangerous import TimedJSONWebSignatureSerializer, JSONWebSignatureSerializer, \
     BadSignature, SignatureExpired
 from django.conf import settings
+from django.urls import reverse_lazy as dj_reverse_lazy, reverse as dj_reverse
+from django.utils.functional import lazy
 
 
 class Singleton(type):
@@ -78,3 +80,13 @@ def get_object_or_none(model, **kwargs):
     except model.DoesNotExist:
         return None
     return obj
+
+
+def reverse(viewname, urlconf=None, args=None, kwargs=None, current_app=None, external=False):
+    url = dj_reverse(viewname, urlconf=urlconf, args=args, kwargs=kwargs, current_app=current_app)
+    if external:
+        url = settings.SITE_URL.strip('/') + url
+    return url
+
+
+reverse_lazy = lazy(reverse, str)

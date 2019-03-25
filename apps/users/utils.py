@@ -9,7 +9,7 @@ import ipaddress
 from django.utils import timezone
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
-from django.urls import reverse_lazy
+from common.utils import reverse_lazy
 from django.core.cache import cache
 from django.http import Http404
 from common.tasks import send_email_async
@@ -70,7 +70,7 @@ def send_user_created_mail(user):
 
 def send_reset_password_mail(user):
     """ 发送用户重置密码邮件 """
-    subject = _("Reset password")
+    subject = "Reset password"
     recipient_list = [user.email]
     message = _("""
         Hello {name}:
@@ -102,8 +102,8 @@ def send_reset_password_mail(user):
 
 
 def redirect_user_first_login_or_index(request, redirect_field_name):
-    if request.user.is_first_login:
-        return reverse_lazy('users:user-first-login')
+    # if request.user.is_first_login:
+    #     return reverse_lazy('users:user-first-login')
     return request.POST.get(
         redirect_field_name, request.GET.get(redirect_field_name, reverse_lazy('index'))
     )
@@ -149,9 +149,8 @@ def set_user_login_failed_count_to_cache(key_limit, key_block):
     cache.set(key_limit, count, int(limit_time) * 60)
 
 
-
 def set_tmp_user_to_cache(request, user):
-    """ 设置临时用户缓存，有效期10分钟 """
+    """ 设置临时用户缓存，有效期10分钟, """
     cache.set(request.session.session_key+'user', user, 600)
 
 

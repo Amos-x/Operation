@@ -7,6 +7,10 @@
 from django.urls import path, re_path
 from users.views import *
 
+
+app_name = 'users'
+
+
 urlpatterns = [
     # login
     path('login/', UserLoginView.as_view(), name='login'),
@@ -15,6 +19,9 @@ urlpatterns = [
     path('password/reset/success/', UserResetPasswordSuccessView.as_view(), name='reset-password-success'),
     path('password/forgot/', UserForgotPasswordView.as_view(), name='forgot-password'),
     path('password/forgot/sendmail-success/', UserForgotPasswordSuccessView.as_view(), name='forgot-password-sendmail-success'),
+
+    # login-log
+    path('login-log/', LoginLogListView.as_view(), name='login-log-list'),
 
     # users
     path('list/', UserListView.as_view(), name='user-list'),

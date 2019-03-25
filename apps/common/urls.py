@@ -7,6 +7,10 @@
 from django.urls import path
 from common.views import *
 
+
+app_name = 'common'
+
+
 urlpatterns = [
     path('basic-setting/', BasicSettingView.as_view(), name='basic-setting'),
     path('email-setting/', EmailSettingView.as_view(), name='email-setting'),

@@ -30,7 +30,10 @@ urlpatterns = [
     # module
     path('assets/', include('assets.urls', namespace='assets')),
     path('common/', include('common.urls', namespace='common')),
-    path('user/', include('users.urls', namespace='users')),
+    path('users/', include('users.urls', namespace='users')),
+
+    # captcha
+    path('captcha/', include('captcha.urls')),
 
 ]
 

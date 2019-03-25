@@ -42,6 +42,11 @@ DEBUG = CONFIG.DEBUG or True
 
 ALLOWED_HOSTS = CONFIG.ALLOWED_HOSTS
 
+if DEBUG:
+    SITE_URL = 'http://localhost:8000'
+else:
+    SITE_URL = CONFIG.SITE_URL or 'http://localhost'
+
 
 # Application definition
 
@@ -169,10 +174,11 @@ MEDIA_ROOT = os.path.join(PROJECT_DIR, 'data', 'media')
 
 # Celery任务消息队列配置
 CELERY_BROKER_URL = CONFIG.CELERY_BROKER_URL
-CELERY_ACCEPT_CONTENT = ['json','msgpack']
-CELERY_TASK_SERIALIZER = 'msgpack'    # task序列化方式
-CELERY_RESULT_BACKEND  =  'django-db'    # 使用django ORM作为celery储存后端
-CELERY_RESULT_SERIALIZER = 'json'    # 结果序列化方式
+CELERY_ACCEPT_CONTENT = ['json','pickle']
+CELERY_TASK_SERIALIZER = 'pickle'    # task序列化方式
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL    # 使用django ORM作为celery储存后端
+CELERY_RESULT_EXPIRES = 3600
+CELERY_RESULT_SERIALIZER = 'pickle'    # 结果序列化方式
 
 # Session配置，使用缓存存放session
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
@@ -185,7 +191,9 @@ CACHES = {
         "LOCATION": CONFIG.REDIS_CACHE_LOCATION,   ## redis单实例连接
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "SERIALIZER": "django_redis.serializers.msgpack.MSGPackSerializer",  ## 指定序列化方式：msgpack（比json更快更小）
+            # 这里只能使用默认的序列化方式，不然报错，无法对类对象直接进行序列化缓存
+            # "SERIALIZER": "django_redis.serializers.msgpack.MSGPackSerializer",  ## 指定序列化方式：msgpack（比json更快更小）
+            # "SERIALIZER": "django_redis.serializers.json.JSONSerializer",  ## 指定序列化方式：json
             "IGNORE_EXCEPTIONS": True,      ## redis连接异常关闭时不触发异常
             "CONNECTION_POOL_KWARGS": {"max_connections": CONFIG.REDIS_MAX_CONNECTIONS},  ## 连接池最大连接池
         },
@@ -199,10 +207,15 @@ DJANGO_REDIS_LOGGER = 'django'  ## 指定缓存log记录器
 # LOGIN_URL = '/login'
 
 # 拓展用户模型
-AUTH_USER_MODEL = 'user.User'
+AUTH_USER_MODEL = 'users.User'
 
 # 用户默认过期时间
 DEFAULT_EXPIRED_YEARS = CONFIG.DEFAULT_EXPIRED_YEARS or 70
+# 默认登录和密码限制
+DEFAULT_PASSWORD_MIN_LENGTH = 6
+DEFAULT_LOGIN_LIMIT_COUNT = 3
+DEFAULT_LOGIN_LIMIT_TIME = 30
+
 
 # Email的SMTP配置
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -211,7 +224,7 @@ EMAIL_PORT = CONFIG.EMAIL_PORT
 EMAIL_HOST_USER = CONFIG.EMAIL_HOST_USER
 EMAIL_HOST_PASSWORD = CONFIG.EMAIL_HOST_PASSWORD
 EMAIL_USE_SSL = CONFIG.EMAIL_USE_SSL
-EMAIL_SUBJECT_PREFIX = CONFIG.EMAIL_SUBJECT_PREFIX or ''    # 邮件主题，默认'[django]'
+EMAIL_SUBJECT_PREFIX = CONFIG.EMAIL_SUBJECT_PREFIX or ''    # 邮件主题前缀
 DEFAULT_FROM_EMAIL = CONFIG.EMAIL_HOST_USER    # 默认系统邮箱
 SERVER_EMAIL = CONFIG.EMAIL_HOST_USER  # 错误消息邮件发送者，即管理员邮箱
 

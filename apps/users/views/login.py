@@ -7,6 +7,7 @@
 import os
 from django.views.generic import FormView, TemplateView, ListView
 from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
@@ -27,7 +28,7 @@ from common.mixins import AdminUserRequiredMixin, DatetimeSearchMixin
 
 
 __all__ = ['UserLoginView', 'UserLogoutView', 'UserResetPasswordView', 'UserForgotPasswordView',
-           'UserForgotPasswordSuccessView', 'UserResetPasswordSuccessView']
+           'UserForgotPasswordSuccessView', 'UserResetPasswordSuccessView', 'LoginLogListView']
 
 
 @method_decorator(sensitive_post_parameters(), name='dispatch')
@@ -169,7 +170,8 @@ class UserForgotPasswordSuccessView(TemplateView):
         context = {
             'title': _('Send reset password message'),
             'messages': _('Send reset password mail success, login your mail box and follow it'),
-            'redirect_url': reverse_lazy('users:login')
+            'redirect_url': reverse_lazy('users:login'),
+            'auto_redirect': True
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)

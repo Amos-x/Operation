@@ -5,6 +5,7 @@
 #   FileName = user
 
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 from users.models import User
 
 

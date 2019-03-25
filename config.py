@@ -38,8 +38,8 @@ class Config:
     # EMAIL SMTP settings:
     EMAIL_HOST = 'smtp.exmail.qq.com'
     EMAIL_PORT = 465
-    EMAIL_HOST_USER = 'creatson@creatson.com'
-    EMAIL_HOST_PASSWORD = 'Krs201705'
+    EMAIL_HOST_USER = 'wangyx@yaobili.com'
+    EMAIL_HOST_PASSWORD = 'A2018wyx'
     EMAIL_USE_SSL = True
     EMAIL_SUBJECT_PREFIX = 'Operation'
 
