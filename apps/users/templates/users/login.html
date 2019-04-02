@@ -62,9 +62,11 @@
                         <div class="form-group">
                             <input type="password" class="form-control" name="{{ form.password.html_name }}" placeholder="{% trans 'Password' %}" required="">
                         </div>
-                        <div>
-                            {{ form.captcha }}
-                        </div>
+                        {% if captcha %}
+                            <div>
+                                {{ form.captcha }}
+                            </div>
+                        {% endif %}
                         <button type="submit" class="btn btn-primary block full-width m-b">{% trans 'Login' %}</button>
 
                         {% if demo_mode %}

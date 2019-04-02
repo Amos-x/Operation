@@ -20,7 +20,7 @@ from assets import forms
 
 
 __all__ = ['AssetListView', 'UserAssetListView', 'AssetCreateView', 'AssetDeleteView', 'AssetDetailView',
-           'AssetUpdateView', 'AssetBulkUpdateView']
+           'AssetUpdateView', 'AssetBulkUpdateView', 'AssetExportView', 'BulkImportAssetView']
 
 
 class AssetListView(AdminUserRequiredMixin, TemplateView):
@@ -312,3 +312,11 @@ class AssetDetailView(DetailView):
 #         cache.set(spm, assets_id, 300)
 #         url = reverse_lazy('assets:asset-export') + '?spm=%s' % spm
 #         return JsonResponse({'redirect': url})
+
+
+class AssetExportView(TemplateView):
+    pass
+
+
+class BulkImportAssetView(TemplateView):
+    pass

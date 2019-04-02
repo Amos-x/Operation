@@ -4,7 +4,7 @@
 #  Create_at = 2019-02-28 16:44
 #   FileName = validators
 
-from django.core.validators import  ValidationError
+from django.core.validators import ValidationError
 from assets.utils import validate_ssh_private_key
 
 

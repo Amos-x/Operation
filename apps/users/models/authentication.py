@@ -24,7 +24,7 @@ class LoginLog(models.Model):
     )
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
     username = models.CharField(max_length=128, verbose_name=_('Username'))
-    type = models.CharField(max_length=16, choices=LOGIN_TYPE_CHOICES, verbose_name=_('Login type'))
+    type = models.CharField(choices=LOGIN_TYPE_CHOICES, max_length=2, verbose_name=_('Login type'))
     ip = models.GenericIPAddressField(verbose_name=_("Login ip"))
     city = models.CharField(max_length=64, verbose_name=_('Login city'), blank=True, null=True)
     user_agent = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("User agent"))
@@ -33,5 +33,5 @@ class LoginLog(models.Model):
 
     class Meta:
         db_table = 'users_loginlog'
-        ordering = ['datetime']
+        ordering = ['-datetime']
         verbose_name = _('Login log')

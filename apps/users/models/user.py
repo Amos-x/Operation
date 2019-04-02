@@ -177,3 +177,19 @@ class User(AbstractUser):
     def is_staff(self, value):
         """ 无法直接设置is_staff参数"""
         pass
+
+    @property
+    def is_public_key_valid(self):
+        """
+            检查用户的公钥是否存在，用于 base.html 中用于判断提示信息是否加载
+        """
+        if self._public_key:
+            return True
+        return False
+
+    @is_public_key_valid.setter
+    def is_public_key_valid(self, value):
+        if value is False:
+            self._public_key = None
+        else:
+            raise ValueError(_('此属性只能设置为False，用于重置用户ssh登录的公钥为空'))

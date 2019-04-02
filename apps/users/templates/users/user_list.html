@@ -24,7 +24,6 @@
             <th class="text-center">{% trans 'Username' %}</th>
             <th class="text-center">{% trans 'Role' %}</th>
             <th class="text-center">{% trans 'User group' %}</th>
-            <th class="text-center">{% trans 'Source' %}</th>
             <th class="text-center">{% trans 'Active' %}</th>
             <th class="text-center">{% trans 'Action' %}</th>
         </tr>
@@ -53,7 +52,6 @@
 {% block custom_foot_js %}
 <script src="{% static 'js/jquery.form.min.js' %}"></script>
 <script>
-
 function initTable() {
      var options = {
         ele: $('#user_list_table'),
@@ -66,15 +64,15 @@ function initTable() {
                 var innerHtml = cellData.length > 20 ? cellData.substring(0, 20) + '...': cellData;
                 $(td).html('<span href="javascript:void(0);" data-toggle="tooltip" title="' + cellData + '">' + innerHtml + '</span>');
              }},
-            {targets: 6, createdCell: function (td, cellData) {
+            {targets: 5, createdCell: function (td, cellData) {
                 if (!cellData) {
                     $(td).html('<i class="fa fa-times text-danger"></i>')
                 } else {
                     $(td).html('<i class="fa fa-check text-navy"></i>')
                 }
              }},
-            {targets: 7, createdCell: function (td, cellData, rowData) {
-                var update_btn = '<a href="{% url "users:user-update" pk=DEFAULT_PK %}" class="btn btn-xs btn-info">{% trans "Update" %}</a>'.replace('00000000-0000-0000-0000-000000000000', cellData);
+            {targets: 6, createdCell: function (td, cellData, rowData) {
+                var update_btn = '<a href="{% url "users:user-update" pk=DEFAULT_PK %}" class="btn btn-xs btn-info">{% trans "Update" %}</a>'.replace('{{ DEFAULT_PK }}', cellData);
 
                 var del_btn = "";
                 if (rowData.id === 1 || rowData.username === "admin" || rowData.username === "{{ request.user.username }}") {
@@ -91,14 +89,13 @@ function initTable() {
         ajax_url: '{% url "api-users:user-list" %}',
         columns: [
             {data: "id"}, {data: "name" }, {data: "username" }, {data: "get_role_display" },
-            {data: "groups_display" }, {data: "get_source_display" }, {data: "is_valid" }, {data: "id" }
+            {data: "groups_display" }, {data: "is_valid" }, {data: "id" }
         ],
         op_html: $('#actions').html()
     };
     table = jumpserver.initDataTable(options);
     return table
 }
-
 $(document).ready(function(){
     var table = initTable();
     var fields = $('#fm_user_bulk_update .form-group');
@@ -196,6 +193,7 @@ $(document).ready(function(){
             text: "{% trans 'This will delete the selected users !!!' %}",
             type: "warning",
             showCancelButton: true,
+            cancelButtonText: "{% trans 'Cancel' %}",
             confirmButtonColor: "#DD6B55",
             confirmButtonText: "{% trans 'Confirm' %}",
             closeOnConfirm: false

@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block update_public_key_message %}
-    {% if request.user.is_authenticated and not request.user.is_public_key_valid and not request.COOKIE.close_public_key_msg != '1' %}
+    {% if request.user.is_authenticated and not request.user.is_public_key_valid and not request.COOKIES.close_public_key_msg != '1' %}
     <div class="alert alert-danger help-message alert-dismissable">
         <button aria-hidden="true" data-dismiss="alert" class="close" type="button" onclick="closePublicKeyMsg()">×</button>
         {% url 'users:user-pubkey-update' as user_pubkey_update %}

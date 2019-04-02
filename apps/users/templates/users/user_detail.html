@@ -87,22 +87,22 @@
                                             <td>{% trans 'Role' %}:</td>
                                             <td><b>{{ user_object.get_role_display }}</b></td>
                                         </tr>
-                                        <tr>
-                                            <td>{% trans 'MFA certification' %}:</td>
-                                            <td><b>
-                                                {% if user_object.otp_force_enabled %}
-                                                    {% trans 'Force enabled' %}
-                                                {% elif  user_object.otp_enabled%}
-                                                    {% trans 'Enabled' %}
-                                                {% else %}
-                                                    {% trans 'Disabled' %}
-                                                {% endif %}
-                                            </b></td>
-                                        </tr>
-                                        <tr>
-                                            <td>{% trans 'Source' %}:</td>
-                                            <td><b>{{ user_object.get_source_display }}</b></td>
-                                        </tr>
+{#                                        <tr>#}
+{#                                            <td>{% trans 'MFA certification' %}:</td>#}
+{#                                            <td><b>#}
+{#                                                {% if user_object.otp_force_enabled %}#}
+{#                                                    {% trans 'Force enabled' %}#}
+{#                                                {% elif  user_object.otp_enabled%}#}
+{#                                                    {% trans 'Enabled' %}#}
+{#                                                {% else %}#}
+{#                                                    {% trans 'Disabled' %}#}
+{#                                                {% endif %}#}
+{#                                            </b></td>#}
+{#                                        </tr>#}
+{#                                        <tr>#}
+{#                                            <td>{% trans 'Source' %}:</td>#}
+{#                                            <td><b>{{ user_object.get_source_display }}</b></td>#}
+{#                                        </tr>#}
                                         <tr>
                                             <td>{% trans 'Date expired' %}:</td>
                                             <td><b>{{ user_object.date_expired|date:"Y-m-j H:i:s" }}</b></td>
@@ -151,21 +151,21 @@
                                             </span></td>
 
                                         </tr>
-                                        <tr>
-                                          <td>{% trans 'Force enabled MFA' %}:</td>
-                                            <td><span class="pull-right">
-                                                <div class="switch">
-                                                    <div class="onoffswitch">
-                                                        <input type="checkbox" class="onoffswitch-checkbox" {% if user_object.otp_force_enabled %} checked {% endif %}
-                                                               id="force_enable_otp">
-                                                        <label class="onoffswitch-label" for="force_enable_otp">
-                                                            <span class="onoffswitch-inner"></span>
-                                                            <span class="onoffswitch-switch"></span>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </span></td>
-                                        </tr>
+{#                                        <tr>#}
+{#                                          <td>{% trans 'Force enabled MFA' %}:</td>#}
+{#                                            <td><span class="pull-right">#}
+{#                                                <div class="switch">#}
+{#                                                    <div class="onoffswitch">#}
+{#                                                        <input type="checkbox" class="onoffswitch-checkbox" {% if user_object.otp_force_enabled %} checked {% endif %}#}
+{#                                                               id="force_enable_otp">#}
+{#                                                        <label class="onoffswitch-label" for="force_enable_otp">#}
+{#                                                            <span class="onoffswitch-inner"></span>#}
+{#                                                            <span class="onoffswitch-switch"></span>#}
+{#                                                        </label>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            </span></td>#}
+{#                                        </tr>#}
                                         <tr>
                                             <td>{% trans 'Send reset password mail' %}:</td>
                                             <td>

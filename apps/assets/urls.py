@@ -18,8 +18,12 @@ urlpatterns = [
     re_path(r'^asset/(?P<pk>[0-9a-zA-Z\-]{36})/delete/$', views.AssetDeleteView.as_view(), name='asset-delete'),
     path('asset/updates/', views.AssetBulkUpdateView.as_view(), name='asset-bulk-update'),
 
+    # assets import export
+    path('asset/export/', views.AssetExportView.as_view(), name='asset-export'),
+    path('asset/import/', views.BulkImportAssetView.as_view(), name='asset-import'),
+
     # user asset view
-    path(r'user-asset/', views.UserAssetListView.as_view(), name='user-asset-list'),
+    path('user-asset/', views.UserAssetListView.as_view(), name='user-asset-list'),
 
     # admin user
     path('admin-user/', views.AdminUserListView.as_view(), name='admin-user-list'),
@@ -48,9 +52,9 @@ urlpatterns = [
     # doamin
     path('domain/', views.DomainListView.as_view(), name='domain-list'),
     path('domain/create/', views.DomainCreateView.as_view(), name='domain-create'),
-    re_path(r'^domain/(?P<pk>[0-9a-zA-Z\-]{36})/$', views.DomainDetailView.as_view(), name='domain-detail'),
-    re_path(r'^domain/(?P<pk>[0-9a-zA-Z\-]{36})/update/$', views.DomainUpdateView.as_view(), name='domain-update'),
-    re_path(r'^domain/(?P<pk>[0-9a-zA-Z\-]{36})/delete/$', views.DomainDeleteView.as_view(), name='domain-delete'),
+    re_path(r'domain/(?P<pk>[0-9a-zA-Z\-]{36})/', views.DomainDetailView.as_view(), name='domain-detail'),
+    re_path(r'domain/(?P<pk>[0-9a-zA-Z\-]{36})/update/', views.DomainUpdateView.as_view(), name='domain-update'),
+    re_path(r'domain/(?P<pk>[0-9a-zA-Z\-]{36})/delete/', views.DomainDeleteView.as_view(), name='domain-delete'),
 
     # gateway
     re_path(r'^domain/(?P<pk>[0-9a-zA-Z\-]{36})/gateway/$', views.DomainGatewayListView.as_view(), name='domain-gateway-list'),

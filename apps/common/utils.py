@@ -4,12 +4,16 @@
 #  Create_at = 2019-02-28 14:29
 #   FileName = utils
 
+import codecs
+import re
+import csv
 import logging
 from itsdangerous import TimedJSONWebSignatureSerializer, JSONWebSignatureSerializer, \
     BadSignature, SignatureExpired
 from django.conf import settings
-from django.urls import reverse_lazy as dj_reverse_lazy, reverse as dj_reverse
+from django.urls import reverse as dj_reverse
 from django.utils.functional import lazy
+from django.http import HttpResponse
 
 
 class Singleton(type):
@@ -36,7 +40,7 @@ class Signer(metaclass=Singleton):
         if isinstance(value, bytes):
             value = value.decode('utf-8')
         s = JSONWebSignatureSerializer(self.secret_key)
-        return s.dumps(value)
+        return str(s.dumps(value), encoding='utf-8')
 
     def unsign(self, value):
         """ json web 解签名 """
@@ -90,3 +94,30 @@ def reverse(viewname, urlconf=None, args=None, kwargs=None, current_app=None, ex
 
 
 reverse_lazy = lazy(reverse, str)
+
+
+def data_to_csv_http_response(filename, data):
+    """ 将list数据，转成csv文件的HttpResponse对象，进行文件导出返回 """
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+    response.write(codecs.BOM_UTF8)
+    writer = csv.writer(response, dialect='excel', quoting=csv.QUOTE_MINIMAL)
+    if isinstance(data, list):
+        for line in data:
+            writer.writerow(line)
+        return response
+
+
+def is_uuid(seq):
+    """ 判断是否是uuid, 接受传入字符串或字符串列表，元组 """
+    if isinstance(seq, str):
+        uuid_pattern = re.compile(r'[0-9a-zA-Z\-]{36}')
+        if uuid_pattern.match(seq):
+            return True
+        else:
+            return False
+    else:
+        for s in seq:
+            if not is_uuid(s):
+                return False
+        return True

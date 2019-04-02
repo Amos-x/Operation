@@ -27,7 +27,7 @@ def ssh_key_string_to_obj(text, password=None):
 
 
 def validate_ssh_private_key(text, password=None):
-    """ 验证ssh私钥 """
+    """ 验证是否是ssh私钥 """
     if isinstance(text, bytes):
         try:
             text = text.decode("utf-8")

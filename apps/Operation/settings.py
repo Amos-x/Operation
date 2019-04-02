@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 import sys
+from django.urls import reverse_lazy
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,9 +39,11 @@ except ImportError:
 SECRET_KEY = '0gyi_s^pafm*^#vlkc9n__h+=%-#7=#h*m=ll!d0#u99l3fo5w'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = CONFIG.DEBUG or True
+DEBUG = CONFIG.DEBUG or False
+LOG_LEVEL = CONFIG.LOG_LEVEL or 'INFO'
+LOG_DIR = CONFIG.LOG_DIR or os.path.join(PROJECT_DIR, 'logs')
 
-ALLOWED_HOSTS = CONFIG.ALLOWED_HOSTS
+ALLOWED_HOSTS = CONFIG.ALLOWED_HOSTS or ['*']
 
 if DEBUG:
     SITE_URL = 'http://localhost:8000'
@@ -60,10 +63,12 @@ INSTALLED_APPS = [
     'django_celery_results',
     'django_celery_beat',
     'rest_framework',
+    'bootstrap3',
     'captcha',
     'assets',
     'common',
-    'users'
+    'users',
+    'perms'
 ]
 
 MIDDLEWARE = [
@@ -85,11 +90,14 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'Operation.context_processor.operation_processor',
+                'django.template.context_processors.i18n',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.static'
+                'django.template.context_processors.static',
+                'django.template.context_processors.media'
             ],
         },
     },
@@ -153,7 +161,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(PROJECT_DIR,'data','static')
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
+# STATIC_DIR = os.path.join(BASE_DIR, "static")
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 
 # 上传文件目录设置
 MEDIA_URL = '/media/'
@@ -201,10 +212,11 @@ CACHES = {
         'KEY_PREFIX': 'Operation_system',
     }
 }
-DJANGO_REDIS_LOGGER = 'django'  ## 指定缓存log记录器
+DJANGO_REDIS_LOGGER = 'django'  # 指定缓存log记录器
 
 # 登陆页面的设定
-# LOGIN_URL = '/login'
+LOGIN_URL = reverse_lazy('users:login')
+LOGIN_REDIRECT_URL = reverse_lazy('index')
 
 # 拓展用户模型
 AUTH_USER_MODEL = 'users.User'
@@ -213,7 +225,7 @@ AUTH_USER_MODEL = 'users.User'
 DEFAULT_EXPIRED_YEARS = CONFIG.DEFAULT_EXPIRED_YEARS or 70
 # 默认登录和密码限制
 DEFAULT_PASSWORD_MIN_LENGTH = 6
-DEFAULT_LOGIN_LIMIT_COUNT = 3
+DEFAULT_LOGIN_LIMIT_COUNT = 6
 DEFAULT_LOGIN_LIMIT_TIME = 30
 
 
@@ -235,9 +247,27 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [      # 权限方式类
         'rest_framework.permissions.IsAuthenticated'
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 'PAGE_SIZE': 10
 }
+
+# django自身分页设置，默认分页数
+DISPLAY_PER_PAGE = CONFIG.DISPLAY_PER_PAGE or 25
+
+
+# Django bootstrap3 setting, more see http://django-bootstrap3.readthedocs.io/en/latest/settings.html
+BOOTSTRAP3 = {
+    'horizontal_label_class': 'col-md-2',
+    # Field class to use in horizontal forms
+    'horizontal_field_class': 'col-md-9',
+    # Set placeholder attributes to label if no placeholder is provided
+    'set_placeholder': True,
+    'success_css_class': '',
+}
+
+
+
+
 
 # logging日志配置，定义发送邮件给管理员，default，error，console四个处理器。
 # 一个全局的logger，将日志发给几个处理器，根据日志级别进行不同处理
@@ -257,7 +287,7 @@ LOGGING = {
         'default': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(CONFIG.LOG_DIR,'Operation.log'),   ## 日志输出文件
+            'filename': os.path.join(LOG_DIR,'Operation.log'),   ## 日志输出文件
             'maxBytes': 1024*1024*10,   # 文件大小,10M
             'backupCount': 5,   # 备份份数
             'formatter':'standard',    # 使用哪种formatters日志格式
@@ -265,7 +295,7 @@ LOGGING = {
         'error': {
             'level':'ERROR',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(CONFIG.LOG_DIR,'error.log'),
+            'filename': os.path.join(LOG_DIR,'error.log'),
             'maxBytes':1024*1024*10,    # 文件大小,10M
             'backupCount': 5,
             'formatter':'standard',
@@ -273,7 +303,7 @@ LOGGING = {
         'tasks':{
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(CONFIG.LOG_DIR, 'tasks.log'),
+            'filename': os.path.join(LOG_DIR, 'tasks.log'),
             'maxBytes': 1024*1024*10,
             'backupCount': 10,
             'formatter':'standard',
@@ -287,17 +317,17 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['default', 'console','error'],
-            'level': CONFIG.LOG_LEVEL,
+            'level': LOG_LEVEL,
             'propagate': True
         },
         'operation': {
             'handlers': ['default', 'console','error'],
-            'level': CONFIG.LOG_LEVEL,
+            'level': LOG_LEVEL,
             'propagate': True
         },
         'scheduler_task': {
             'handlers': ['tasks','error'],
-            'level': CONFIG.LOG_LEVEL,
+            'level': LOG_LEVEL,
             'propagate': True
         }
     }

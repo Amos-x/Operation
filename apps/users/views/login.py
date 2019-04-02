@@ -16,13 +16,13 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.core.cache import cache
 from django.contrib.auth import login as auth_login, logout as auth_logout
-from django.contrib.auth.mixins import LoginRequiredMixin
-from formtools.wizard.views import SessionWizardView
+from django.conf import settings
+from django.db.models import Q
 from users.forms import UserLoginForm, UserLoginCaptchaForm
 from users.utils import redirect_user_first_login_or_index, get_login_ip, is_block_login, set_tmp_user_to_cache, \
     get_user_or_tmp_user, set_user_login_failed_count_to_cache, send_reset_password_mail
 from users.tasks import write_login_log_async
-from users.models import User
+from users.models import User, LoginLog
 from common.utils import get_object_or_none
 from common.mixins import AdminUserRequiredMixin, DatetimeSearchMixin
 
@@ -41,7 +41,7 @@ class UserLoginView(FormView):
     redirect_field_name = 'next'
     key_prefix_limit = "_LOGIN_LIMIT_{}_{}"    # 缓存key，个人用户登录次数限制的key，后跟username+ip
     key_prefix_block = "_LOGIN_BLOCK_{}"    # 缓存key，是否已限制用户登录，后跟username
-    key_prefix_captcha = '_LOGIN_INVALID_{}'    # 缓存key，个人用户是否需要验证码登录，后跟ip
+    key_prefix_captcha = '_LOGIN_CAPTCHA_{}'    # 缓存key，个人用户是否需要验证码登录，后跟ip
 
     def get(self, request, *args, **kwargs):
         """ get请求，判断用户是否已验证，并返回登录页或首页"""
@@ -62,11 +62,17 @@ class UserLoginView(FormView):
         return super().post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        captcha = False
+        ip = get_login_ip(self.request)
+        if cache.get(self.key_prefix_captcha.format(ip)):
+            captcha = True
         context = {
             'demo_mode': os.environ.get("DEMO_MODE"),
+            'block_login': False,    # 默认限制登录为False
+            'captcha': captcha,
         }
-        kwargs.update(context)
-        return super().get_context_data(**kwargs)
+        context.update(kwargs)
+        return super().get_context_data(**context)
 
     def form_valid(self, form):
         """ 表单验证通过，返回成功url """
@@ -93,7 +99,7 @@ class UserLoginView(FormView):
         user_agent = self.request.META.get('HTTP_USER_AGENT', '')
         tmp_data = {
             'ip': login_ip,
-            'type': 'w',
+            'type': 'W',
             'user_agent': user_agent
         }
         data.update(tmp_data)
@@ -221,5 +227,42 @@ class UserResetPasswordSuccessView(TemplateView):
 
 
 class LoginLogListView(AdminUserRequiredMixin, DatetimeSearchMixin, ListView):
-    pass
+    model = LoginLog
+    template_name = 'users/login_log_list.html'
+    paginate_by = settings.DISPLAY_PER_PAGE
+    user = keyword = ""
+    date_to = date_from = None
 
+    def get_queryset(self):
+        self.user = self.request.GET.get('user', '')
+        self.keyword = self.request.GET.get('keyword', '')
+
+        queryset = super().get_queryset()
+        queryset = queryset.filter(
+            datetime__gt=self.date_from, datetime__lt=self.date_to
+        )
+        if self.user:
+            queryset = queryset.filter(username=self.user)
+        if self.keyword:
+            queryset = queryset.filter(
+                Q(ip__contains=self.keyword) |
+                Q(city__contains=self.keyword) |
+                Q(username__contains=self.keyword) |
+                Q(user_agent__contains=self.keyword)
+            )
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = {
+            'app': _('Users'),
+            'action': _('Login log list'),
+            'date_from': self.date_from,
+            'date_to': self.date_to,
+            'user': self.user,
+            'keyword': self.keyword,
+            'user_list': set(
+                LoginLog.objects.all().values_list('username', flat=True)
+            )
+        }
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)

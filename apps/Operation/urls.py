@@ -14,12 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from django.conf.urls.static import static
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.urls import path, include, re_path
+from django.views.static import serve
 from django.conf import settings
 from rest_framework.documentation import include_docs_urls
 from Operation.views import IndexView
+import re
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,14 +30,21 @@ urlpatterns = [
     # module
     path('assets/', include('assets.urls', namespace='assets')),
     path('common/', include('common.urls', namespace='common')),
-    path('users/', include('users.urls', namespace='users')),
+    path('users/', include('users.urls.views_urls', namespace='users')),
+    path('perms/', include('perms.urls', namespace='perms')),
+    path('terminal/', include('terminal.urls', namespace='terminal')),
 
     # captcha
     path('captcha/', include('captcha.urls')),
 
+    # api module
+    path('api/users/', include('users.urls.api_urls', namespace='api-users'))
 ]
 
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
-            + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-
+# static and media
+urlpatterns += [
+    re_path(r'^%s(?P<path>.*)$' % re.escape(settings.STATIC_URL.lstrip('/')),
+            serve, {'document_root': settings.STATIC_ROOT}),
+    re_path(r'^%s(?P<path>.*)$' % re.escape(settings.MEDIA_URL.lstrip('/')),
+            serve, {'document_root': settings.MEDIA_ROOT})
+]

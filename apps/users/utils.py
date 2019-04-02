@@ -31,7 +31,7 @@ def date_expired_default():
 
 def send_user_created_mail(user):
     """ 发送用户创建成功邮件，并通过邮件设置密码 """
-    subject = _("Create account successfully")
+    subject = "Create account successfully"
     recipient_list = [user.email]
     message = _("""
     Hello {name}:
@@ -56,7 +56,7 @@ def send_user_created_mail(user):
         username=user.username,
         rest_password_url=reverse_lazy('users:reset-password', external=True),
         rest_password_token=user.generate_reset_token(),
-        forget_password_url=reverse_lazy('users:forget-password', external=True),
+        forget_password_url=reverse_lazy('users:forgot-password', external=True),
         email=user.email,
         login_url=reverse_lazy('users:login', external=True)
     ))
@@ -94,6 +94,28 @@ def send_reset_password_mail(user):
         rest_password_token=user.generate_reset_token(),
         forget_password_url=reverse_lazy('users:forgot-password', external=True),
         email=user.email,
+        login_url=reverse_lazy('users:login', external=True)
+    ))
+    if settings.DEBUG:
+        logger.debug(message)
+    send_email_async.delay(subject, message, recipient_list, html_message=message)
+
+
+def send_reset_ssh_key_mail(user):
+    """ 发送用户重置密码邮件 """
+    subject = "Reset ssh key"
+    recipient_list = [user.email]
+    message = _("""
+    Hello {name}:
+    </br>
+    Your ssh public key has been reset by site administrator.
+    Please login and reset your ssh public key.
+    </br>
+    <a href="{login_url}">Login direct</a>
+
+    </br>
+    """.format(
+        name=user.name,
         login_url=reverse_lazy('users:login', external=True)
     ))
     if settings.DEBUG:
@@ -216,3 +238,9 @@ def get_ip_city(ip, timeout=10):
             pass
     return city
 
+
+def is_need_unblock(block_key):
+    """ 检查环境key，看看用户是否被锁，被锁则返回True，反之则否 """
+    if not cache.get(block_key):
+        return False
+    return True

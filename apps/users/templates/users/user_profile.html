@@ -60,6 +60,14 @@
                                                 <td>{{ user.email }}</td>
                                             </tr>
                                             <tr>
+                                                <td class="text-navy">{% trans 'Wechat' %}</td>
+                                                <td>{{ user.wechat }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-navy">{% trans 'Phone' %}</td>
+                                                <td>{{ user.phone }}</td>
+                                            </tr>
+                                            <tr>
                                                 <td class="text-navy">{% trans 'Active' %}</td>
                                                 <td>{{ user.is_active|yesno:"Yes,No,Unkown" }}</td>
                                             </tr>
@@ -67,6 +75,7 @@
                                             <tr>
                                                 <td class="text-navy">{% trans 'Public key' %}</td>
                                                 <td>
+                                                    {% if user.public_key_obj %}
                                                     <table>
                                                         <tr>
                                                             <td>
@@ -79,27 +88,28 @@
                                                             </td>
                                                         </tr>
                                                     </table>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-navy">{% trans 'MFA certification' %}</td>
-                                                <td>
-                                                    {% if user.otp_force_enabled %}
-                                                        {% trans 'Force enable' %}
-                                                    {% elif  user.otp_enabled%}
-                                                        {% trans 'Enable' %}
-                                                    {% else %}
-                                                        {% trans 'Disable' %}
-                                                    {% endif %}
-                                                    {% if mfa_setting %}
-                                                        ( {% trans 'Administrator Settings force MFA login' %} )
                                                     {% endif %}
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td class="text-navy">{% trans 'Source' %}</td>
-                                                <td>{{ user.get_source_display }}</td>
-                                            </tr>
+{#                                            <tr>#}
+{#                                                <td class="text-navy">{% trans 'MFA certification' %}</td>#}
+{#                                                <td>#}
+{#                                                    {% if user.otp_force_enabled %}#}
+{#                                                        {% trans 'Force enable' %}#}
+{#                                                    {% elif  user.otp_enabled%}#}
+{#                                                        {% trans 'Enable' %}#}
+{#                                                    {% else %}#}
+{#                                                        {% trans 'Disable' %}#}
+{#                                                    {% endif %}#}
+{#                                                    {% if mfa_setting %}#}
+{#                                                        ( {% trans 'Administrator Settings force MFA login' %} )#}
+{#                                                    {% endif %}#}
+{#                                                </td>#}
+{#                                            </tr>#}
+{#                                            <tr>#}
+{#                                                <td class="text-navy">{% trans 'Source' %}</td>#}
+{#                                                <td>{{ user.get_source_display }}</td>#}
+{#                                            </tr>#}
                                             <tr>
                                                 <td class="text-navy">{% trans 'Date joined' %}</td>
                                                 <td>{{ user.date_joined|date:"Y-m-d H:i:s" }}</td>
@@ -148,36 +158,36 @@
                                         <td>{% trans 'Update password' %}:</td>
                                         <td>
                                             <span class="pull-right">
-                                                <a type="button" class="btn btn-primary btn-xs" style="width: 54px" href="{% url 'users:user-password-update' %}">{% trans 'Update' %}</a>
+                                                <a type="button" class="btn btn-primary btn-xs" style="width: 54px" href="{% url 'users:user-profile-password-update' %}">{% trans 'Update' %}</a>
                                             </span>
                                         </td>
                                     </tr>
-                                    <tr class="no-borders-tr">
-                                        <td>{% trans 'Update MFA settings' %}:</td>
-                                        <td>
-                                            <span class="pull-right">
-                                                <a type="button" class="btn btn-primary btn-xs" style="width: 54px" id=""
-                                                   href="
-                                                        {% if request.user.otp_enabled and request.user.otp_secret_key %}
-                                                            {% if request.user.otp_force_enabled %}
-                                                                " disabled >{% trans 'Disable' %}
-                                                            {% else %}
-                                                                {% url 'users:user-otp-disable-authentication' %}
-                                                                ">{% trans 'Disable' %}
-                                                            {% endif %}
-                                                        {% else %}
-                                                            {% url 'users:user-otp-enable-authentication' %}
-                                                            ">{% trans 'Enable' %}
-                                                        {% endif %}
-                                                </a>
-                                            </span>
-                                        </td>
-                                    </tr>
+{#                                    <tr class="no-borders-tr">#}
+{#                                        <td>{% trans 'Update MFA settings' %}:</td>#}
+{#                                        <td>#}
+{#                                            <span class="pull-right">#}
+{#                                                <a type="button" class="btn btn-primary btn-xs" style="width: 54px" id=""#}
+{#                                                   href="#}
+{#                                                        {% if request.user.otp_enabled and request.user.otp_secret_key %}#}
+{#                                                            {% if request.user.otp_force_enabled %}#}
+{#                                                                " disabled >{% trans 'Disable' %}#}
+{#                                                            {% else %}#}
+{#                                                                {% url 'users:user-otp-disable-authentication' %}#}
+{#                                                                ">{% trans 'Disable' %}#}
+{#                                                            {% endif %}#}
+{#                                                        {% else %}#}
+{#                                                            {% url 'users:user-otp-enable-authentication' %}#}
+{#                                                            ">{% trans 'Enable' %}#}
+{#                                                        {% endif %}#}
+{#                                                </a>#}
+{#                                            </span>#}
+{#                                        </td>#}
+{#                                    </tr>#}
                                     <tr>
                                         <td>{% trans 'Update SSH public key' %}:</td>
                                         <td>
                                             <span class="pull-right">
-                                                <a type="button" class="btn btn-primary btn-xs" style="width: 54px" href="{% url 'users:user-pubkey-update' %}">{% trans 'Update' %}</a>
+                                                <a type="button" class="btn btn-primary btn-xs" style="width: 54px" href="{% url 'users:user-profile-pubkey-update' %}">{% trans 'Update' %}</a>
                                             </span>
                                         </td>
                                     </tr>
@@ -201,34 +211,8 @@
 {% endblock %}
 {% block custom_foot_js %}
 <script>
-$(document).on('click', '#btn_update_pk', function() {
-    var $this = $(this);
-    var pk = $('#txt_pk').val();
-    var the_url = '{% url "api-users:user-public-key-update" pk=user.id %}';
-    var body = {'_public_key': pk};
-    var success = function() {
-        $('#txt_pk').val('');
-        var msg = "{% trans 'Successfully updated the SSH public key.' %}";
-        swal("{% trans 'User SSH public key update' %}", msg, "success");
-    };
-    var fail = function() {
-        var msg = "{% trans 'Failed to update SSH public key.' %}";
-        swal({
-            title: "{% trans 'User SSH public key update' %}",
-            text: msg,
-            type: "error",
-            showCancelButton: false,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "{% trans 'Confirm' %}",
-            closeOnConfirm: true
-            }, function () {
-              $('#txt_pk').focus();
-            }
-        );
-    };
-    APIUpdateAttr({ url: the_url, body: JSON.stringify(body), success: success, error: fail});
-}).on('click', '.btn-reset-pubkey', function () {
-    var the_url = '{% url "users:user-pubkey-generate" %}';
+$(document).on('click', '.btn-reset-pubkey', function () {
+    var the_url = '{% url "users:user-profile-pubkey-generate" %}';
     window.open(the_url, "_blank")
 })
 </script>
