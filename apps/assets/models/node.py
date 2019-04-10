@@ -8,7 +8,7 @@ import uuid
 from django.db import models, transaction
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
-
+from .asset import Asset
 
 __all__ = ['Node']
 
@@ -17,7 +17,7 @@ class Node(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
     key = models.CharField(unique=True, max_length=64, verbose_name=_('Key'))  # 内容如：1:1:1:1
     value = models.CharField(max_length=128, verbose_name=_('Value'))
-    child_mark = models.IntegerField(default=0)  # node下
+    child_mark = models.IntegerField(default=1)  # node下
     date_create = models.DateTimeField(auto_now_add=True, null=True, blank=True, verbose_name=_('Date created'))
 
     is_node = True
@@ -67,8 +67,7 @@ class Node(models.Model):
         return self.value
 
     def get_all_assets(self):
-        """ 返回 node 下所有 asset"""
-        from .asset import Asset
+        """ 返回 node 下所有 assets，包括子孙节点 """
         if self.is_root():
             assets = Asset.objects.all()
         else:
@@ -80,6 +79,7 @@ class Node(models.Model):
         return self.get_all_assets().valid()
 
     def get_assets(self):
+        """ 返回当前节点下所有资产，不包括子孙节点 """
         from .asset import Asset
         if self.is_root():
             assets = Asset.objects.filter(Q(node__id=self.id) | Q(nodes__isnull=True))
@@ -197,20 +197,6 @@ class Node(models.Model):
     @parent.setter
     def parent(self, parent):
         """ 设置父节点，用于节点迁移 """
-        if self.is_node:
-            children = self.get_all_children()
-            old_key = self.key
-            with transaction.atomic():
-                self.key = parent.get_next_child_key()
-                for child in children:
-                    child.key = child.key.replace(old_key, self.key, 1)
-                    child.save()
-                self.save()
-        else:
-            self.key = parent.key + ':fake'
-
-    @parent.setter
-    def parent(self, parent):
         if self.is_node:
             children = self.get_all_children()
             old_key = self.key

@@ -15,7 +15,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class Config:
     # Gunicorn workers, default 4
-    WORKERS = 4
+    WORKERS = 1
 
     # Django security setting, if your disable debug model, you should setting that
     ALLOWED_HOSTS = ['*']
@@ -24,7 +24,7 @@ class Config:
     DEBUG = True
 
     # DEBUG, INFO, WARNING, ERROR, CRITICAL can set. See https://docs.djangoproject.com/en/1.10/topics/logging/
-    LOG_LEVEL = 'INFO'
+    LOG_LEVEL = 'DEBUG'
     LOG_DIR = os.path.join(BASE_DIR, 'logs')
 
     # Database settings, MySQL or Postgres

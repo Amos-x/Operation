@@ -6,13 +6,11 @@
 
 
 import uuid
-import logging
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 
 __all__ = ['Cluster']
-logger = logging.getLogger(__name__)
 
 
 class Cluster(models.Model):

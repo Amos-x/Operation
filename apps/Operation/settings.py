@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'bootstrap3',
     'captcha',
+    'django_filters',
     'assets',
     'common',
     'users',
@@ -247,6 +248,14 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [      # 权限方式类
         'rest_framework.permissions.IsAuthenticated'
     ],
+    # 设置默认过滤器， 实现基本的搜索，排序等过滤
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ),
+    'SEARCH_PARAM': 'search',
+    'ORDERING_PARAM': 'order',
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     # 'PAGE_SIZE': 10
 }
@@ -264,9 +273,6 @@ BOOTSTRAP3 = {
     'set_placeholder': True,
     'success_css_class': '',
 }
-
-
-
 
 
 # logging日志配置，定义发送邮件给管理员，default，error，console四个处理器。

@@ -5,13 +5,11 @@
 #   FileName = group
 
 import uuid
-import logging
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 
 __all__ = ['AssetGroup']
-logger = logging.getLogger(__name__)
 
 
 class AssetGroup(models.Model):

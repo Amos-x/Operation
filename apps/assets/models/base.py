@@ -5,7 +5,6 @@
 #   FileName = base
 
 import uuid
-import logging
 import sshpubkeys
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -16,8 +15,6 @@ from common.utils import get_signer
 
 
 __all__ = ['AssetUser']
-logger = logging.getLogger(__name__)
-
 signer = get_signer()
 
 

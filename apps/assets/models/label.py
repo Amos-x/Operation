@@ -41,8 +41,3 @@ class Label(models.Model):
         db_table = 'assets_label'
         verbose_name = _('Label')
         unique_together = [('name','value')]
-
-
-
-
-

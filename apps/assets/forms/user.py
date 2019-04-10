@@ -97,7 +97,7 @@ class SystemUserForm(PasswordAndKeyAuthForm):
     class Meta:
         model = SystemUser
         fields = ['name', 'username', 'priority', 'protocol', 'password', 'private_key_file',
-                  'auto_push', 'login_Mode', 'comment', 'shell', 'sudo', 'auto_generate_key']
+                  'auto_push', 'login_mode', 'comment', 'shell', 'sudo', 'auto_generate_key']
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': _('Name')}),
             'username': forms.TextInput(attrs={'placeholder': _('Username')})

@@ -5,7 +5,6 @@
 #   FileName = domain
 
 import uuid
-import logging
 import random
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -13,7 +12,6 @@ from .base import AssetUser
 
 
 __all__ = ['Domain', 'Gateway']
-logger = logging.getLogger(__name__)
 
 
 class Domain(models.Model):

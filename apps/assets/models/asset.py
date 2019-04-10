@@ -5,7 +5,6 @@
 #   FileName = assets
 
 import uuid
-import logging
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.cache import cache
@@ -13,7 +12,6 @@ from assets.constant import ASSET_ADMIN_CONN_CACHE_KEY
 
 
 __all__ = ['Asset']
-logger = logging.getLogger(__name__)
 
 
 def default_node():
@@ -171,6 +169,7 @@ class Asset(models.Model):
 
     @property
     def hardware_info(self):
+        """ 资产硬件信息汇总显示，用于页面数据输出，在序列化中使用 """
         if self.cpu_count:
             return '{} Core {} {}'.format(self.cpu_vcpus or self.cpu_count * self.cpu_cores, self.memoryl, self.disk_total)
         else:

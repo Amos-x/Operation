@@ -4,17 +4,15 @@
 #  Create_at = 2019-02-28 19:32
 #   FileName = user
 
-import logging
 from .base import AssetUser
 from common.utils import get_signer
-from assets.constant import SYSTEM_USER_CONN_CACHE_KEY
+from assets.constant import SYSTEM_USER_CONN_CACHE_KEY, ADMIN_USER_CONN_CACHE_KEY
 from django.db import models
 from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _
 
 
 __all__ = ['AdminUser', 'SystemUser']
-logger = logging.getLogger(__name__)
 signer = get_signer()
 
 
@@ -57,6 +55,24 @@ class AdminUser(AssetUser):
         """ 返回此管理用户下所有资产的数量 """
         return self.get_related_assets().count()
 
+    @property
+    def reachable_amount(self):
+        """ 获取此管理用户下所有的可连接资产数量 """
+        data = cache.get(ADMIN_USER_CONN_CACHE_KEY.format(self.name))
+        if data:
+            return len(data.get('contacted'))
+        else:
+            return 0
+
+    @property
+    def unreachable_amount(self):
+        """ 获取此管理用户下所有的不可连接资产数量 """
+        data = cache.get(ADMIN_USER_CONN_CACHE_KEY.format(self.name))
+        if data:
+            return len(data.get('dark'))
+        else:
+            return 0
+
 
 class SystemUser(AssetUser):
     SSH_PROTOCOL = 'ssh'
@@ -81,7 +97,7 @@ class SystemUser(AssetUser):
     auto_push = models.BooleanField(default=True, verbose_name=_("Auto push"))
     sudo = models.TextField(default='/bin/whoami', verbose_name=_('Sudo'))
     shell = models.CharField(max_length=64, default='/bin/bash', verbose_name=_('Shell'))
-    login_Mode = models.CharField(choices=LOGIN_MODE_CHOICES, default=AUTO_LOGIN, max_length=16, verbose_name=_('Login mode'))
+    login_mode = models.CharField(choices=LOGIN_MODE_CHOICES, default=AUTO_LOGIN, max_length=16, verbose_name=_('Login mode'))
 
     def __str__(self):
         return '{0}({1})'.format(self.name, self.username)

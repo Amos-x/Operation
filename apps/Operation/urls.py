@@ -28,7 +28,7 @@ urlpatterns = [
     path('', IndexView.as_view(), name='index'),
 
     # module
-    path('assets/', include('assets.urls', namespace='assets')),
+    path('assets/', include('assets.urls.views_urls', namespace='assets')),
     path('common/', include('common.urls', namespace='common')),
     path('users/', include('users.urls.views_urls', namespace='users')),
     path('perms/', include('perms.urls', namespace='perms')),
@@ -38,7 +38,8 @@ urlpatterns = [
     path('captcha/', include('captcha.urls')),
 
     # api module
-    path('api/users/', include('users.urls.api_urls', namespace='api-users'))
+    path('api/users/', include('users.urls.api_urls', namespace='api-users')),
+    path('api/assets/', include('assets.urls.api_urls', namespace='api-assets')),
 ]
 
 # static and media

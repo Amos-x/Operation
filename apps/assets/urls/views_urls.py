@@ -5,12 +5,13 @@
 #   FileName = urls
 
 from django.urls import path, re_path
-from . import views
+from assets import views
 
 
 app_name = 'assets'
 
 urlpatterns = [
+    # asset
     path('', views.AssetListView.as_view(), name='asset-list'),
     path('asset/create/', views.AssetCreateView.as_view(), name='asset-create'),
     re_path(r'^asset/(?P<pk>[0-9a-zA-Z\-]{36})/$', views.AssetDetailView.as_view(), name='asset-detail'),
